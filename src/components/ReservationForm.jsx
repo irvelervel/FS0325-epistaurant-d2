@@ -13,9 +13,31 @@
 // "specialRequests" -> string | undefined
 
 import { Component } from 'react'
-import { Container, Row, Col, Form } from 'react-bootstrap'
+import { Container, Row, Col, Form, Button } from 'react-bootstrap'
 
 class ReservationForm extends Component {
+  state = {
+    // in questo oggetto state React memorizzerà in ogni momento
+    // i valori dei campi del form!
+    // questo vuol dire che lo STATO INIZIALE del nostro componente
+    // dovrà essere predisposto per salvare tutti questi valori
+
+    // in React OGNI FORM CHE CREATE DEVE ESSERE UN "CONTROLLED FORM"
+    // un "controlled form" è un form in cui siete voi a capo della sua
+    // intera logia: controllate i valori del form in ogni momento e
+    // ne tenete traccia all'interno dello STATE del componente
+
+    // definisco lo STATO INIZIALE
+    formValues: {
+      name: '',
+      phone: '',
+      numberOfPeople: '1',
+      smoking: false,
+      dateTime: new Date().toISOString().slice(0, -8),
+      specialRequests: '',
+    },
+  }
+
   render() {
     return (
       <Container>
@@ -29,17 +51,64 @@ class ReservationForm extends Component {
             <Form>
               <Form.Group className="mb-3">
                 <Form.Label>Il tuo nome</Form.Label>
-                <Form.Control type="text" placeholder="Mario Bros" />
+                <Form.Control
+                  type="text"
+                  placeholder="Mario Bros"
+                  required
+                  // come si CONTROLLA un form? un form si controlla "controllando"
+                  // ogni suo input
+                  // ogni INPUT deve essere collegato allo state con un cosiddetto
+                  // "TWO-WAY DATA BINDING"
+                  value={this.state.formValues.name}
+                  onChange={
+                    // l'onChange si occuperà di intervenire ad ogni lettera
+                    // inserita nell'input e ad aggiornare la proprietà
+                    // corrispondente nello state del componente
+                    (e) => {
+                      this.setState({
+                        formValues: {
+                          ...this.state.formValues, // riporto tutte le 6 proprietà
+                          // dello stato corrente
+                          name: e.target.value, // il carattere che ho
+                          // appena inserito nell'input
+                        },
+                      })
+                    }
+                  }
+                />
               </Form.Group>
 
               <Form.Group className="mb-3">
                 <Form.Label>Il tuo numero di telefono</Form.Label>
-                <Form.Control type="tel" />
+                <Form.Control
+                  type="tel"
+                  required
+                  value={this.state.formValues.phone}
+                  onChange={(e) => {
+                    this.setState({
+                      formValues: {
+                        ...this.state.formValues,
+                        phone: e.target.value,
+                      },
+                    })
+                  }}
+                />
               </Form.Group>
 
               <Form.Group className="mb-3">
                 <Form.Label>In quanti siete</Form.Label>
-                <Form.Select aria-label="number of people field">
+                <Form.Select
+                  aria-label="number of people field"
+                  value={this.state.formValues.numberOfPeople}
+                  onChange={(e) => {
+                    this.setState({
+                      formValues: {
+                        ...this.state.formValues,
+                        numberOfPeople: e.target.value,
+                      },
+                    })
+                  }}
+                >
                   <option>1</option>
                   <option>2</option>
                   <option>3</option>
@@ -52,7 +121,21 @@ class ReservationForm extends Component {
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Check type="checkbox" label="Tavolo fumatori" />
+                <Form.Check
+                  type="checkbox"
+                  label="Tavolo fumatori"
+                  // la proprietà "value" nelle checkbox NON È un valore booleano
+                  // (ma è una stringa che può assumere i valori "on" e "off")
+                  checked={this.state.formValues.smoking}
+                  onChange={(e) => {
+                    this.setState({
+                      formValues: {
+                        ...this.state.formValues,
+                        smoking: e.target.checked,
+                      },
+                    })
+                  }}
+                />
               </Form.Group>
 
               <Form.Group className="mb-3">
@@ -64,13 +147,39 @@ class ReservationForm extends Component {
                   // e ci rimuovo gli ultimi 8 caratteri che simboleggiano
                   // i secondi e le informazioni di fuso orario, che non
                   // possono essere fornite come valore valido per "min"
+                  required
+                  value={this.state.formValues.dateTime}
+                  onChange={(e) => {
+                    this.setState({
+                      formValues: {
+                        ...this.state.formValues,
+                        dateTime: e.target.value,
+                      },
+                    })
+                  }}
                 />
               </Form.Group>
 
               <Form.Group className="mb-3">
                 <Form.Label>Allergie/Intolleranze/Bambini</Form.Label>
-                <Form.Control as="textarea" rows={5} />
+                <Form.Control
+                  as="textarea"
+                  rows={5}
+                  value={this.state.formValues.specialRequests}
+                  onChange={(e) => {
+                    this.setState({
+                      formValues: {
+                        ...this.state.formValues,
+                        specialRequests: e.target.value,
+                      },
+                    })
+                  }}
+                />
               </Form.Group>
+
+              <Button variant="success" type="submit">
+                INVIA
+              </Button>
             </Form>
           </Col>
         </Row>
