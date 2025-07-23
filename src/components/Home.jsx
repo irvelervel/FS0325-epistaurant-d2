@@ -51,7 +51,7 @@ class Home extends Component {
                   // va utilizzata come "key" SOLO come ULTIMA SPIAGGIA
                   <Carousel.Item key={pasta.id}>
                     <img
-                      className="img-fluid"
+                      className="w-100"
                       src={pasta.image}
                       alt={'immagine di' + pasta.name}
                     />
