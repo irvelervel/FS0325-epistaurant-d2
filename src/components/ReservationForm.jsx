@@ -13,7 +13,16 @@
 // "specialRequests" -> string | undefined
 
 import { Component } from 'react'
-import { Container, Row, Col, Form, Button } from 'react-bootstrap'
+import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap'
+
+const initialFormValues = {
+  name: '',
+  phone: '',
+  numberOfPeople: '1',
+  smoking: false,
+  dateTime: new Date().toISOString().slice(0, -8),
+  specialRequests: '',
+}
 
 class ReservationForm extends Component {
   state = {
@@ -28,14 +37,39 @@ class ReservationForm extends Component {
     // ne tenete traccia all'interno dello STATE del componente
 
     // definisco lo STATO INIZIALE
-    formValues: {
-      name: '',
-      phone: '',
-      numberOfPeople: '1',
-      smoking: false,
-      dateTime: new Date().toISOString().slice(0, -8),
-      specialRequests: '',
-    },
+    formValues: initialFormValues,
+  }
+
+  submitForm = (e) => {
+    // la "e" sta arrivando dall'event listener "onSubmit"
+    // annullo il comportamento di default del form
+    e.preventDefault()
+    // facciamo la chiamata POST per salvare l'evento in DB!
+    fetch('https://striveschool-api.herokuapp.com/api/reservation', {
+      method: 'POST',
+      body: JSON.stringify(this.state.formValues),
+      headers: {
+        'Content-type': 'application/json',
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          // serve proseguire per estrarre il JSON dalla response?
+          // anche no, tanto ci restituirebbe lo stesso oggetto che abbiamo
+          // inviato
+          alert('PRENOTAZIONE SALVATA!')
+          //   svuoto il form, riportando lo stato del componente ai valori iniziali
+          this.setState({
+            formValues: initialFormValues, // D R Y
+          })
+        } else {
+          throw new Error('Errore nella richiesta')
+        }
+      })
+      .catch((err) => {
+        console.log('errore', err)
+        alert('PRENOTAZIONE NON SALVATA!')
+      })
   }
 
   render() {
@@ -48,7 +82,7 @@ class ReservationForm extends Component {
         </Row>
         <Row className="justify-content-center mt-3">
           <Col xs={12} md={8} lg={6}>
-            <Form>
+            <Form onSubmit={this.submitForm}>
               <Form.Group className="mb-3">
                 <Form.Label>Il tuo nome</Form.Label>
                 <Form.Control
@@ -77,6 +111,11 @@ class ReservationForm extends Component {
                   }
                 />
               </Form.Group>
+
+              {/* esempio di CONDITIONAL RENDERING */}
+
+              {this.state.formValues.name.toLocaleLowerCase() ===
+                'giangiorgio' && <Alert variant="info">BEL NOME!</Alert>}
 
               <Form.Group className="mb-3">
                 <Form.Label>Il tuo numero di telefono</Form.Label>
@@ -137,6 +176,12 @@ class ReservationForm extends Component {
                   }}
                 />
               </Form.Group>
+
+              {this.state.formValues.smoking === true ? (
+                <Alert variant="danger">Fumare fa male!</Alert>
+              ) : (
+                <Alert variant="success">Non fumare fa bene!</Alert>
+              )}
 
               <Form.Group className="mb-3">
                 <Form.Label>Quando e a che ora</Form.Label>
