@@ -31,7 +31,7 @@ class Home extends Component {
           <Col xs={12} md={8} lg={6}>
             <Carousel
               onSlide={(i) => {
-                console.log('SLIDE CAMBIATA!', i)
+                // console.log('SLIDE CAMBIATA!', i)
                 // quando cambia la slide dobbiamo MODIFICARE il valore di
                 // activePasta nello STATE in modo da tenerlo sempre aggiornato
                 // man mano che le slide si susseguono
